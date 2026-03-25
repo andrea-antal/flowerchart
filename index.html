@@ -139,6 +139,9 @@ body{
   letter-spacing:.1em;text-transform:uppercase;transition:all .25s;
 }
 .intro-btn:hover{background:var(--gold);color:var(--bg)}
+#intro-credit{margin-top:18px;font-size:.78rem;color:var(--muted)}
+#intro-credit a{color:var(--muted);text-decoration:underline;text-underline-offset:2px}
+#intro-credit a:hover{color:var(--text)}
 .intro-skip{
   position:absolute;top:28px;right:28px;
   font-family:'Inter',sans-serif;font-size:.8rem;
@@ -614,11 +617,12 @@ body.exporting #export-area{background:var(--bg);padding:20px}
     <h1 id="intro-title" class="intro-el">The Harada Method</h1>
     <div class="intro-line" id="intro-line"></div>
     <div class="intro-desc">
-      <p id="intro-p1" class="intro-el">One dream at the center.</p>
-      <p id="intro-p2" class="intro-el">Eight pillars to support it.</p>
-      <p id="intro-p3" class="intro-el">Sixty-four daily actions to make it real.</p>
+      <p id="intro-p1" class="intro-el">Shohei Ohtani mapped his entire future on a single grid — and then made it happen.</p>
+      <p id="intro-p2" class="intro-el">One dream at the center. Eight pillars to support it. Sixty-four daily actions to make it real.</p>
+      <p id="intro-p3" class="intro-el">Now it's your turn.</p>
     </div>
     <button id="intro-cta" class="intro-el intro-btn" onclick="endIntro()">Build Your Flower Chart</button>
+    <p id="intro-credit" class="intro-el">As featured in the <a href="https://news.harvard.edu/gazette/story/2026/02/crush-your-goals-the-ohtani-way/" target="_blank" rel="noopener">Harvard Gazette</a></p>
   </div>
 </div>
 
@@ -783,6 +787,7 @@ function runIntro(){
     [2100,()=>document.getElementById('intro-p2').classList.add('show')],
     [2900,()=>document.getElementById('intro-p3').classList.add('show')],
     [4200,()=>document.getElementById('intro-cta').classList.add('show')],
+    [4700,()=>document.getElementById('intro-credit').classList.add('show')],
   ];
   steps.forEach(([d,fn])=>introTimers.push(setTimeout(fn,d)));
 }
