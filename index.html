@@ -626,6 +626,55 @@ body{
 .modal-transition-msg strong{font-style:normal;color:var(--gold)}
 
 /* ════════════════════════════════════════
+   COACHING OVERLAY
+   ════════════════════════════════════════ */
+.coach-overlay{
+  position:fixed;inset:0;background:var(--overlay);
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  z-index:160;display:none;align-items:center;justify-content:center;
+}
+.coach-overlay.open{display:flex}
+@keyframes coachIn{from{opacity:0;transform:translateY(14px) scale(.95)}to{opacity:1;transform:none}}
+.coach-modal{
+  background:var(--elevated);border-radius:18px;
+  padding:32px 34px 28px;width:480px;max-width:90vw;
+  border:1px solid var(--border);
+  box-shadow:0 32px 100px oklch(0 0 0/0.35);
+  animation:coachIn .28s cubic-bezier(.22,1,.36,1);
+  text-align:center;
+}
+.coach-icon{
+  font-size:2rem;margin-bottom:14px;line-height:1;
+}
+.coach-heading{
+  font-family:'Instrument Serif',serif;font-size:1.35rem;
+  color:var(--gold);font-weight:400;margin-bottom:16px;
+}
+.coach-body{
+  font-size:.93rem;color:var(--muted);line-height:1.75;
+  margin-bottom:24px;
+}
+.coach-body strong{color:var(--text);font-weight:600}
+.coach-btn{
+  font-family:'Inter',sans-serif;font-size:.87rem;font-weight:600;
+  padding:11px 34px;border-radius:8px;
+  border:1.5px solid var(--gold);background:var(--gold);
+  color:var(--bg);cursor:pointer;transition:all .2s;
+  letter-spacing:.03em;
+}
+.coach-btn:hover{background:var(--gold-dark);border-color:var(--gold-dark)}
+
+/* Pillar cell invite pulse */
+@keyframes pillar-invite{
+  0%{box-shadow:0 0 0 0 oklch(0.88 0.15 90 / 0.5)}
+  50%{box-shadow:0 0 0 8px oklch(0.88 0.15 90 / 0)}
+  100%{box-shadow:0 0 0 0 oklch(0.88 0.15 90 / 0)}
+}
+.cell.theme.pillar-invite{
+  animation:pillar-invite .85s ease-out 3;
+}
+
+/* ════════════════════════════════════════
    EXPORT MODE
    ════════════════════════════════════════ */
 body.exporting .cell{transition:none!important}
@@ -633,7 +682,7 @@ body.exporting .cell:hover{box-shadow:none!important;background:inherit!importan
 body.exporting .cell.dream{animation:none!important;box-shadow:var(--dream-shadow)!important}
 body.exporting .cell.theme.guide-target{animation:none!important}
 body.exporting #export-stamp{display:block}
-body.exporting .toolbar,body.exporting .guide-bar,body.exporting .modal-overlay{display:none!important}
+body.exporting .toolbar,body.exporting .guide-bar,body.exporting .modal-overlay,body.exporting .coach-overlay{display:none!important}
 body.exporting .subgrid{animation:none!important;opacity:1!important}
 body.exporting #export-area{background:var(--bg);padding:20px}
 </style>
@@ -725,6 +774,19 @@ body.exporting #export-area{background:var(--bg);padding:20px}
       <button id="modal-cancel-btn" onclick="cancelModal()">Cancel</button>
       <button id="modal-save-btn" class="save" onclick="saveModal()">Save</button>
     </div>
+  </div>
+</div>
+
+<!-- ═══════ COACHING OVERLAY ═══════ -->
+<div class="coach-overlay" id="coach-overlay">
+  <div class="coach-modal">
+    <div class="coach-icon">&#10024;</div>
+    <div class="coach-heading">Now build the foundation</div>
+    <div class="coach-body">
+      Think about the <strong>8 areas of your life</strong> that need to come together to make this happen.<br><br>
+      These could be <strong>skills, habits, relationships, mindset, physical health, environment, finances, or character</strong> — whatever supports your dream.
+    </div>
+    <button class="coach-btn" onclick="dismissCoach()">Got it</button>
   </div>
 </div>
 
@@ -1174,6 +1236,48 @@ function updateProgress(){
 function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')}
 
 /* ════════════════════════════════════════
+   COACHING OVERLAY
+   ════════════════════════════════════════ */
+function showCoachOverlay(){
+  document.getElementById('coach-overlay').classList.add('open');
+}
+
+function dismissCoach(){
+  document.getElementById('coach-overlay').classList.remove('open');
+  if(guideActive&&guideQueue.length){
+    // Coach was gating the guide — now advance to pillar 1
+    setTimeout(()=>advanceGuide(),300);
+  } else {
+    pulseFirstEmptyPillar();
+  }
+}
+
+function pulseFirstEmptyPillar(){
+  // Desktop: find first empty theme cell in the center subgrid
+  const grid=document.getElementById('mandala-grid');
+  if(grid){
+    const themeCells=[...grid.querySelectorAll('.sg-center-pos .cell.theme')];
+    const target=themeCells.find(c=>!c.querySelector('.ph')===false||c.querySelector('.ph'));
+    // Find first that has placeholder text (empty pillar)
+    const empty=themeCells.find(c=>c.querySelector('.ph'));
+    if(empty){
+      empty.classList.add('pillar-invite');
+      empty.addEventListener('animationend',()=>empty.classList.remove('pillar-invite'),{once:true});
+    }
+  }
+  // Mobile: same logic on mobile grid
+  const mGrid=document.getElementById('mobile-grid');
+  if(mGrid){
+    const themeCells=[...mGrid.querySelectorAll('.cell.theme')];
+    const empty=themeCells.find(c=>c.querySelector('.ph'));
+    if(empty){
+      empty.classList.add('pillar-invite');
+      empty.addEventListener('animationend',()=>empty.classList.remove('pillar-invite'),{once:true});
+    }
+  }
+}
+
+/* ════════════════════════════════════════
    ONBOARDING HELPERS
    ════════════════════════════════════════ */
 const EXAMPLE_MAP=[
@@ -1337,6 +1441,11 @@ function saveModal(){
   save();
   closeModal();
   renderGrid();renderMobileGrid();updateProgress();renderTD();renderGantt();
+  if(type==='dream'&&val){
+    // Coach overlay gates the guide advance — dismissCoach() will call advanceGuide()
+    showCoachOverlay();
+    return;
+  }
   if(guideActive&&guideQueue.length) advanceGuide();
 }
 
