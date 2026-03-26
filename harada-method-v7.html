@@ -20,7 +20,7 @@
   --text:oklch(0.95 0.005 280);
   --muted:oklch(0.57 0.02 280);
   --faint:oklch(0.31 0.015 280);
-  --ph:oklch(0.48 0.015 280);
+  --ph:oklch(0.55 0.015 280);
   --gold:oklch(0.88 0.15 90);
   --gold-dark:oklch(0.83 0.17 85);
   --gold-dim:oklch(0.88 0.15 90 / 0.12);
@@ -844,8 +844,13 @@ function openGuideNext(){
 function advanceGuide(){
   if(!guideActive||!guideQueue.length) return;
   guideQueue.shift();
-  renderGrid();
-  renderMobileGrid();
+  // Skip queue entries the user already filled manually
+  while(guideQueue.length){
+    const q=guideQueue[0];
+    if(q.type==='dream'&&S.dream) guideQueue.shift();
+    else if(q.type==='theme'&&S.themes[q.ti]) guideQueue.shift();
+    else break;
+  }
   updateGuideUI();
   if(guideQueue.length){
     setTimeout(()=>openGuideNext(),800);
@@ -904,7 +909,7 @@ function updateGuideUI(){
 
   if(next.type==='dream'){
     step.textContent='Step 1 of 3';
-    text.textContent=guidePaused?'Click the golden center cell, or press Continue.':'What is your biggest dream? Start at the center.';
+    text.textContent=guidePaused?'Click the center cell, or press Continue.':'What is your biggest dream? Start at the center.';
   } else if(next.type==='theme'){
     const done=8-guideQueue.filter(q=>q.type==='theme').length;
     step.textContent='Step 2 of 3';
@@ -1181,8 +1186,8 @@ function saveModal(){
   else S.actions[ti][ai]=val;
   save();
   closeModal();
-  renderGrid();renderMobileGrid();updateProgress();renderTD();renderGantt();
   if(guideActive&&guideQueue.length) advanceGuide();
+  renderGrid();renderMobileGrid();updateProgress();renderTD();renderGantt();
 }
 
 function cancelModal(){
