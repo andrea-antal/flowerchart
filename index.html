@@ -228,6 +228,7 @@ body{
   border-radius:6px;cursor:pointer;transition:background .15s;
 }
 .toolbar-menu button:hover{background:var(--surface)}
+.toolbar-menu-sep{height:1px;background:var(--border);margin:4px 8px}
 
 /* Theme toggle icon */
 .theme-icon-btn{
@@ -669,13 +670,18 @@ body.exporting #export-area{background:var(--bg);padding:20px}
   <div class="toolbar-more">
     <button class="toolbar-more-btn" onclick="toggleToolbarMenu(event)" title="More options">&middot;&middot;&middot;</button>
     <div class="toolbar-menu" id="toolbar-menu">
+      <button onclick="exportJSON();closeToolbarMenu()">Export JSON</button>
+      <button onclick="exportMarkdown();closeToolbarMenu()">Export Markdown</button>
+      <div class="toolbar-menu-sep"></div>
+      <button onclick="document.getElementById('import-file').click();closeToolbarMenu()">Import JSON / Markdown</button>
+      <div class="toolbar-menu-sep"></div>
       <button onclick="loadExample();closeToolbarMenu()">Ohtani Example</button>
       <button onclick="newGrid();closeToolbarMenu()">New Grid</button>
       <button onclick="replayIntro();closeToolbarMenu()">Replay Intro</button>
     </div>
   </div>
 </nav>
-
+<input type="file" id="import-file" accept=".json,.md,.markdown,.txt" style="display:none" onchange="handleImport(this)">
 
 </div><!-- /app-wrap -->
 
@@ -1309,6 +1315,138 @@ async function exportPNG(){
     a.download='mandala-chart.png';a.href=dataUrl;a.click();
   }catch(e){alert('Export failed: '+e.message)}
   document.body.classList.remove('exporting');
+}
+
+/* ════════════════════════════════════════
+   EXPORT / IMPORT (JSON & MARKDOWN)
+   ════════════════════════════════════════ */
+function downloadFile(name,content,type){
+  const blob=new Blob([content],{type});
+  const a=document.createElement('a');
+  a.download=name;a.href=URL.createObjectURL(blob);a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function exportJSON(){
+  const data={dream:S.dream,themes:S.themes,actions:S.actions,timeline:TL};
+  const slug=(S.dream||'flowerchart').replace(/[^a-z0-9]+/gi,'-').toLowerCase().slice(0,40);
+  downloadFile(slug+'.json',JSON.stringify(data,null,2),'application/json');
+}
+
+function exportMarkdown(){
+  let md=`# ${S.dream||'(No dream set)'}\n`;
+  for(let i=0;i<8;i++){
+    const name=S.themes[i]||`Pillar ${i+1}`;
+    md+=`\n## ${name}\n`;
+    const actions=S.actions[i].filter(a=>a);
+    if(actions.length){
+      actions.forEach(a=>md+=`- ${a.replace(/\n/g,' ')}\n`);
+    } else {
+      md+=`_(no actions yet)_\n`;
+    }
+  }
+  if(TL.start||TL.target){
+    md+=`\n---\n\n## Timeline\n`;
+    if(TL.start) md+=`- **Start:** ${TL.start}\n`;
+    if(TL.target) md+=`- **Target:** ${TL.target}\n`;
+    if(TL.breakdown) md+=`- **Breakdown:** ${TL.breakdown}\n`;
+    TL.themes.forEach((t,i)=>{
+      if(t.start||t.end) md+=`- **${S.themes[i]||'Pillar '+(i+1)}:** ${t.start||'?'} \u2192 ${t.end||'?'}\n`;
+    });
+  }
+  const slug=(S.dream||'flowerchart').replace(/[^a-z0-9]+/gi,'-').toLowerCase().slice(0,40);
+  downloadFile(slug+'.md',md,'text/markdown');
+}
+
+function parseMarkdown(text){
+  const data=dS();
+  const lines=text.split('\n');
+  let section=-1,actionIdx=0;
+  for(const raw of lines){
+    const line=raw.trim();
+    if(line.startsWith('# ')&&section<0){
+      data.dream=line.slice(2).trim();
+      if(data.dream==='(No dream set)') data.dream='';
+    } else if(line.startsWith('## ')&&!line.toLowerCase().includes('timeline')){
+      section++;
+      if(section<8) data.themes[section]=line.slice(3).trim();
+      actionIdx=0;
+    } else if(line.startsWith('- ')&&section>=0&&section<8&&actionIdx<8&&!line.startsWith('- **')){
+      data.actions[section][actionIdx]=line.slice(2).trim();
+      actionIdx++;
+    }
+  }
+  return data;
+}
+
+function parseMarkdownTimeline(text){
+  const tl=dTL();
+  const lines=text.split('\n');
+  let inTimeline=false;
+  for(const raw of lines){
+    const line=raw.trim();
+    if(line.startsWith('## ')&&line.toLowerCase().includes('timeline')){inTimeline=true;continue}
+    if(inTimeline&&line.startsWith('## ')) break;
+    if(!inTimeline) continue;
+    const m=line.match(/^-\s+\*\*(.+?):\*\*\s*(.+)/);
+    if(!m) continue;
+    const key=m[1].trim().toLowerCase(),val=m[2].trim();
+    if(key==='start') tl.start=val;
+    else if(key==='target') tl.target=val;
+    else if(key==='breakdown') tl.breakdown=val;
+    else {
+      const arrow=val.split('\u2192').map(s=>s.trim());
+      for(let i=0;i<8;i++){
+        const name=(key).toLowerCase();
+        if(name&&name===((S.themes[i]||'pillar '+(i+1)).toLowerCase())){
+          tl.themes[i]={start:arrow[0]==='?'?'':arrow[0],end:(arrow[1]||'')==='?'?'':arrow[1]};
+        }
+      }
+    }
+  }
+  return tl;
+}
+
+function handleImport(input){
+  const file=input.files[0];
+  if(!file) return;
+  input.value='';
+  const reader=new FileReader();
+  reader.onload=function(){
+    const text=reader.result;
+    const isJSON=file.name.endsWith('.json');
+    try{
+      if(isJSON){
+        const data=JSON.parse(text);
+        if(!data.dream&&!data.themes) throw new Error('Not a valid Flower Chart JSON file.');
+        S.dream=data.dream||'';
+        S.themes=Array.isArray(data.themes)?data.themes.slice(0,8):Array(8).fill('');
+        while(S.themes.length<8) S.themes.push('');
+        S.actions=Array.isArray(data.actions)?data.actions.slice(0,8).map(a=>Array.isArray(a)?a.slice(0,8):Array(8).fill('')):Array.from({length:8},()=>Array(8).fill(''));
+        S.actions.forEach(a=>{while(a.length<8) a.push('')});
+        while(S.actions.length<8) S.actions.push(Array(8).fill(''));
+        if(data.timeline){
+          TL=Object.assign(dTL(),data.timeline);
+          TL.themes=Array.isArray(data.timeline.themes)?data.timeline.themes.slice(0,8):dTL().themes;
+          while(TL.themes.length<8) TL.themes.push({start:'',end:''});
+        }
+      } else {
+        const data=parseMarkdown(text);
+        S.dream=data.dream;
+        S.themes=data.themes;
+        S.actions=data.actions;
+        const tl=parseMarkdownTimeline(text);
+        if(tl.start||tl.target) TL=tl;
+      }
+      save();saveTL();
+      skipGuide();
+      prevVisible=new Set();isFirstRender=true;
+      renderGrid();renderMobileGrid();updateProgress();initTL();renderTD();renderGantt();
+    }catch(e){
+      alert('Import failed: '+e.message);
+    }
+  };
+  reader.readAsText(file);
 }
 
 /* ════════════════════════════════════════
