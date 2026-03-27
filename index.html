@@ -1505,7 +1505,7 @@ function onTLChange(){
 function onTDC(ti,f,v){TL.themes[ti][f]=v;saveTL();renderGantt()}
 
 function renderTD(){
-  const c=document.getElementById('theme-dates');c.innerHTML='';
+  const c=document.getElementById('theme-dates');if(!c) return;c.innerHTML='';
   for(let i=0;i<8;i++){
     if(!S.themes[i]) continue;
     const d=TL.themes[i];
@@ -1520,7 +1520,7 @@ function renderTD(){
 }
 
 function renderGantt(){
-  const g=document.getElementById('gantt');
+  const g=document.getElementById('gantt');if(!g) return;
   const s0=TL.start,s1=TL.target;
   if(!s0||!s1){g.innerHTML='<div class="gantt-empty">Set start and target dates to see your timeline.</div>';return}
   const t0=new Date(s0+'T00:00:00'),t1=new Date(s1+'T00:00:00');
