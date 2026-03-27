@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Flower Chart — v7</title>
+<title>Flower Chart</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -141,6 +141,9 @@ body{
   letter-spacing:.1em;text-transform:uppercase;transition:all .25s;
 }
 .intro-btn:hover{background:var(--gold);color:var(--bg)}
+#intro-credit{margin-top:18px;font-size:.78rem;color:var(--muted)}
+#intro-credit a{color:var(--muted);text-decoration:underline;text-underline-offset:2px}
+#intro-credit a:hover{color:var(--text)}
 .intro-skip{
   position:absolute;top:28px;right:28px;
   font-family:'Inter',sans-serif;font-size:.8rem;
@@ -508,11 +511,6 @@ body{
 .modal-actions button:hover{border-color:var(--text);color:var(--text)}
 .modal-actions button.save{background:var(--gold);color:var(--bg);border-color:var(--gold);font-weight:600}
 .modal-actions button.save:hover{background:var(--gold-dark)}
-.modal-examples{
-  font-size:.8rem;color:var(--muted);margin-top:10px;
-  line-height:1.5;
-}
-.modal-examples strong{color:var(--text);font-weight:600;font-size:.75rem;letter-spacing:.03em;text-transform:uppercase}
 .modal-guide-hint{
   font-size:.8rem;color:var(--faint);margin-top:10px;
   text-align:center;font-style:italic;
@@ -601,6 +599,88 @@ body{
 .app-wrap.visible{opacity:1}
 
 /* ════════════════════════════════════════
+   ONBOARDING: ACTION MODAL ENHANCEMENTS
+   ════════════════════════════════════════ */
+.modal-examples{font-size:.8rem;color:var(--faint);font-style:italic;margin:-4px 0 12px;line-height:1.75}
+.modal-sublabel{position:relative}
+.tip-icon{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:15px;height:15px;border-radius:50%;border:1.5px solid var(--faint);
+  font-size:.68rem;color:var(--faint);cursor:pointer;vertical-align:middle;
+  margin-left:4px;transition:all .15s;font-style:normal;user-select:none;
+}
+.tip-icon:hover,.tip-icon.active{border-color:var(--gold);color:var(--gold)}
+.tip-popup{
+  position:absolute;left:0;top:calc(100% + 6px);z-index:300;
+  background:var(--elevated);border:1px solid var(--border);
+  border-radius:10px;padding:12px 14px;width:260px;
+  box-shadow:0 8px 24px oklch(0 0 0/0.2);
+  display:none;font-size:.82rem;line-height:1.55;
+}
+.tip-popup.open{display:block;animation:fadeSlideIn .18s ease}
+.tip-row{margin-bottom:8px}
+.tip-row:last-child{margin-bottom:0}
+.tip-tag{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--faint);margin-bottom:3px}
+.tip-bad{color:var(--muted);font-style:italic}
+.tip-good{color:var(--gold);font-weight:500;font-style:italic}
+.verb-hint{font-size:.8rem;color:var(--muted);margin-top:6px;font-style:italic;animation:fadeSlideIn .2s ease}
+.modal-transition-msg{display:none;margin:6px 0 18px;line-height:1.75}
+.modal-transition-msg p{
+  font-family:'Instrument Serif',serif;font-size:1.1rem;
+  color:var(--text);font-style:italic;margin-bottom:6px;
+}
+.modal-transition-msg strong{font-style:normal;color:var(--gold)}
+
+/* ════════════════════════════════════════
+   COACHING OVERLAY
+   ════════════════════════════════════════ */
+.coach-overlay{
+  position:fixed;inset:0;background:var(--overlay);
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  z-index:160;display:none;align-items:center;justify-content:center;
+}
+.coach-overlay.open{display:flex}
+@keyframes coachIn{from{opacity:0;transform:translateY(14px) scale(.95)}to{opacity:1;transform:none}}
+.coach-modal{
+  background:var(--elevated);border-radius:18px;
+  padding:32px 34px 28px;width:480px;max-width:90vw;
+  border:1px solid var(--border);
+  box-shadow:0 32px 100px oklch(0 0 0/0.35);
+  animation:coachIn .28s cubic-bezier(.22,1,.36,1);
+  text-align:center;
+}
+.coach-icon{
+  font-size:2rem;margin-bottom:14px;line-height:1;
+}
+.coach-heading{
+  font-family:'Instrument Serif',serif;font-size:1.35rem;
+  color:var(--gold);font-weight:400;margin-bottom:16px;
+}
+.coach-body{
+  font-size:.93rem;color:var(--muted);line-height:1.75;
+  margin-bottom:24px;
+}
+.coach-body strong{color:var(--text);font-weight:600}
+.coach-btn{
+  font-family:'Inter',sans-serif;font-size:.87rem;font-weight:600;
+  padding:11px 34px;border-radius:8px;
+  border:1.5px solid var(--gold);background:var(--gold);
+  color:var(--bg);cursor:pointer;transition:all .2s;
+  letter-spacing:.03em;
+}
+.coach-btn:hover{background:var(--gold-dark);border-color:var(--gold-dark)}
+
+/* Pillar cell invite pulse */
+@keyframes pillar-invite{
+  0%{box-shadow:0 0 0 0 oklch(0.88 0.15 90 / 0.5)}
+  50%{box-shadow:0 0 0 8px oklch(0.88 0.15 90 / 0)}
+  100%{box-shadow:0 0 0 0 oklch(0.88 0.15 90 / 0)}
+}
+.cell.theme.pillar-invite{
+  animation:pillar-invite .85s ease-out 3;
+}
+
+/* ════════════════════════════════════════
    EXPORT MODE
    ════════════════════════════════════════ */
 body.exporting .cell{transition:none!important}
@@ -608,7 +688,7 @@ body.exporting .cell:hover{box-shadow:none!important;background:inherit!importan
 body.exporting .cell.dream{animation:none!important;box-shadow:var(--dream-shadow)!important}
 body.exporting .cell.theme.guide-target{animation:none!important}
 body.exporting #export-stamp{display:block}
-body.exporting .toolbar,body.exporting .guide-bar,body.exporting .modal-overlay{display:none!important}
+body.exporting .toolbar,body.exporting .guide-bar,body.exporting .modal-overlay,body.exporting .coach-overlay{display:none!important}
 body.exporting .subgrid{animation:none!important;opacity:1!important}
 body.exporting #export-area{background:var(--bg);padding:20px}
 </style>
@@ -622,11 +702,12 @@ body.exporting #export-area{background:var(--bg);padding:20px}
     <h1 id="intro-title" class="intro-el">The Harada Method</h1>
     <div class="intro-line" id="intro-line"></div>
     <div class="intro-desc">
-      <p id="intro-p1" class="intro-el">One dream at the center.</p>
-      <p id="intro-p2" class="intro-el">Eight pillars to support it.</p>
-      <p id="intro-p3" class="intro-el">Sixty-four daily actions to make it real.</p>
+      <p id="intro-p1" class="intro-el">Shohei Ohtani mapped his entire future on a single grid — and then made it happen.</p>
+      <p id="intro-p2" class="intro-el">One dream at the center. Eight pillars to support it. Sixty-four daily actions to make it real.</p>
+      <p id="intro-p3" class="intro-el">Now it's your turn.</p>
     </div>
     <button id="intro-cta" class="intro-el intro-btn" onclick="endIntro()">Build Your Flower Chart</button>
+    <p id="intro-credit" class="intro-el">As featured in the <a href="https://news.harvard.edu/gazette/story/2026/02/crush-your-goals-the-ohtani-way/" target="_blank" rel="noopener">Harvard Gazette</a></p>
   </div>
 </div>
 
@@ -687,19 +768,35 @@ body.exporting #export-area{background:var(--bg);padding:20px}
 
 <!-- ═══════ MODAL ═══════ -->
 <div class="modal-overlay" id="modal-overlay" onclick="if(event.target===this)cancelModal()">
-  <div class="modal">
+  <div class="modal" id="modal-box">
     <div class="modal-color-bar" id="modal-color-bar"></div>
     <div class="modal-breadcrumb" id="modal-breadcrumb"></div>
     <div class="modal-label" id="modal-label"></div>
     <div class="modal-sublabel" id="modal-sublabel"></div>
+    <div id="modal-examples" class="modal-examples" style="display:none"></div>
+    <div id="modal-transition-msg" class="modal-transition-msg"></div>
     <textarea id="modal-input" placeholder="Type here..."
+      oninput="onModalInput(this.value)"
       onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();saveModal()}"></textarea>
-    <div class="modal-examples" id="modal-examples" style="display:none"></div>
+    <div id="verb-hint" class="verb-hint" style="display:none"></div>
     <div class="modal-guide-hint" id="modal-guide-hint" style="display:none"></div>
     <div class="modal-actions">
-      <button onclick="cancelModal()">Cancel</button>
-      <button class="save" onclick="saveModal()">Save</button>
+      <button id="modal-cancel-btn" onclick="cancelModal()">Cancel</button>
+      <button id="modal-save-btn" class="save" onclick="saveModal()">Save</button>
     </div>
+  </div>
+</div>
+
+<!-- ═══════ COACHING OVERLAY ═══════ -->
+<div class="coach-overlay" id="coach-overlay">
+  <div class="coach-modal">
+    <div class="coach-icon">&#10024;</div>
+    <div class="coach-heading">Now build the foundation</div>
+    <div class="coach-body">
+      Think about the <strong>8 areas of your life</strong> that need to come together to make this happen.<br><br>
+      These could be <strong>skills, habits, relationships, mindset, physical health, environment, finances, or character</strong> — whatever supports your dream.
+    </div>
+    <button class="coach-btn" onclick="dismissCoach()">Got it</button>
   </div>
 </div>
 
@@ -777,7 +874,15 @@ function toggleToolbarMenu(e){
   document.getElementById('toolbar-menu').classList.toggle('open');
 }
 function closeToolbarMenu(){document.getElementById('toolbar-menu').classList.remove('open')}
-document.addEventListener('click',()=>closeToolbarMenu());
+document.addEventListener('click',e=>{
+  closeToolbarMenu();
+  if(!e.target.closest('#tip-trigger')){
+    const p=document.getElementById('tip-popup');
+    if(p) p.classList.remove('open');
+    const ic=document.getElementById('tip-trigger');
+    if(ic) ic.classList.remove('active');
+  }
+});
 
 function toggleTheme(){
   applyTheme(document.documentElement.dataset.theme==='dark'?'light':'dark');
@@ -795,6 +900,7 @@ function runIntro(){
     [2100,()=>document.getElementById('intro-p2').classList.add('show')],
     [2900,()=>document.getElementById('intro-p3').classList.add('show')],
     [4200,()=>document.getElementById('intro-cta').classList.add('show')],
+    [4700,()=>document.getElementById('intro-credit').classList.add('show')],
   ];
   steps.forEach(([d,fn])=>introTimers.push(setTimeout(fn,d)));
 }
@@ -832,6 +938,8 @@ let guidePaused=false;
 function startGuide(){
   guideQueue=[{type:'dream'}];
   for(let i=0;i<8;i++) guideQueue.push({type:'theme',ti:i});
+  guideQueue.push({type:'transition'});
+  guideQueue.push({type:'action',ti:0,ai:0});
   guideActive=true;
   guidePaused=false;
   updateGuideUI();
@@ -861,6 +969,8 @@ function advanceGuide(){
     else if(q.type==='theme'&&S.themes[q.ti]) guideQueue.shift();
     else break;
   }
+  renderGrid();
+  renderMobileGrid();
   updateGuideUI();
   if(guideQueue.length){
     setTimeout(()=>openGuideNext(),800);
@@ -929,6 +1039,12 @@ function updateGuideUI(){
     text.textContent=guidePaused
       ?`Pillar ${done+1} \u2014 press Continue to keep going.`
       :`Pillar ${done+1} \u2014 what key area supports your dream?`;
+  } else if(next.type==='transition'){
+    step.textContent='8/8 pillars';
+    text.textContent='Pillars complete \u2014 now define your daily actions.';
+  } else if(next.type==='action'){
+    step.textContent=`${fa}/64 actions`;
+    text.textContent='Define your first daily action. Click any cell anytime to add more.';
   }
 }
 
@@ -1141,6 +1257,113 @@ function updateProgress(){
 function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')}
 
 /* ════════════════════════════════════════
+   COACHING OVERLAY
+   ════════════════════════════════════════ */
+function showCoachOverlay(){
+  document.getElementById('coach-overlay').classList.add('open');
+}
+
+function dismissCoach(){
+  document.getElementById('coach-overlay').classList.remove('open');
+  if(guideActive&&guideQueue.length){
+    // Coach was gating the guide — now advance to pillar 1
+    setTimeout(()=>advanceGuide(),300);
+  } else {
+    pulseFirstEmptyPillar();
+  }
+}
+
+function pulseFirstEmptyPillar(){
+  // Desktop: find first empty theme cell in the center subgrid
+  const grid=document.getElementById('mandala-grid');
+  if(grid){
+    const themeCells=[...grid.querySelectorAll('.sg-center-pos .cell.theme')];
+    const target=themeCells.find(c=>!c.querySelector('.ph')===false||c.querySelector('.ph'));
+    // Find first that has placeholder text (empty pillar)
+    const empty=themeCells.find(c=>c.querySelector('.ph'));
+    if(empty){
+      empty.classList.add('pillar-invite');
+      empty.addEventListener('animationend',()=>empty.classList.remove('pillar-invite'),{once:true});
+    }
+  }
+  // Mobile: same logic on mobile grid
+  const mGrid=document.getElementById('mobile-grid');
+  if(mGrid){
+    const themeCells=[...mGrid.querySelectorAll('.cell.theme')];
+    const empty=themeCells.find(c=>c.querySelector('.ph'));
+    if(empty){
+      empty.classList.add('pillar-invite');
+      empty.addEventListener('animationend',()=>empty.classList.remove('pillar-invite'),{once:true});
+    }
+  }
+}
+
+/* ════════════════════════════════════════
+   ONBOARDING HELPERS
+   ════════════════════════════════════════ */
+const EXAMPLE_MAP=[
+  {keys:['body','fit','health','exercis','strength','physical','wellness','gym','sport','stamina','nutrition','diet','eat','food','weight'],
+   ex:['Do 20 push-ups before breakfast','Walk 10,000 steps every day','Sleep by 10:30pm no exceptions']},
+  {keys:['mental','mind','focus','mindset','psychol','stress','anxiety','meditat','clarity','emotion','confidence','wellbeing'],
+   ex:['Meditate for 5 minutes each morning','Write 3 things you\'re grateful for','Journal for 10 min before bed']},
+  {keys:['skill','technic','master','craft','profess','work','career','code','program','develop','practice','train'],
+   ex:['Practice the skill for 30 focused minutes','Review one piece of work from the past week','Learn one new thing every day']},
+  {keys:['relation','social','famil','friend','connect','communit','people','network','team','partner','love'],
+   ex:['Send one genuine message to a friend','Have a 10-min undistracted conversation','Do one kind act without being asked']},
+  {keys:['financ','money','wealth','budget','saving','invest','busi','income','revenue','earn'],
+   ex:['Log every expense each evening','Set aside 10% of income to savings','Read one article on finance or investing']},
+  {keys:['learn','educat','read','study','knowl','book','cours','research'],
+   ex:['Read 10 pages of a non-fiction book','Watch one educational video','Complete one lesson or quiz daily']},
+  {keys:['spirit','gratitud','meaning','purpos','value','faith','pray','reflect','calm','peace'],
+   ex:['Spend 5 minutes in silent reflection','Write down one value you lived today','Do one selfless act for someone else']},
+  {keys:['creat','art','music','writ','design','paint','draw','compos'],
+   ex:['Spend 15 minutes creating without judgment','Practice your craft in one focused session','Share one piece of creative work daily']},
+  {keys:['speed','fast','quick','rapid','swift','agil','react','reflex'],
+   ex:['Do one timed drill every session','Aim to cut 5% off your best time','Add one sprint or burst to your routine']},
+  {keys:['control','precis','accur','target','aim','technique','mechanic','form'],
+   ex:['Practice 50 precise repetitions daily','Record and review your form once a week','Focus on one technical detail per session']},
+  {keys:['charact','integr','honest','ethic','discipl','habit','routine','respect','humble','karma'],
+   ex:['Keep one commitment you made to yourself','Do the hardest task first each morning','Express genuine gratitude to one person']},
+];
+
+function getExamples(pillarName){
+  const lower=(pillarName||'').toLowerCase();
+  for(const m of EXAMPLE_MAP){
+    if(m.keys.some(k=>lower.includes(k))) return m.ex;
+  }
+  return ['Do it for at least 20 focused minutes','Complete one small step toward this pillar','Reflect for 5 minutes on your progress'];
+}
+
+const ACTION_VERBS=['run','walk','do','read','write','call','practice','eat','drink','sleep','meditate','exercise','study','learn','review','track','spend','complete','send','take','make','prepare','plan','record','check','listen','reach','set','build','create','visit','journal','reflect','share','commit','focus','help','give','finish','start','clean','stretch','lift','swim','cook','draw','play','sing','speak','ask','teach','attend','schedule','limit','cut','add','watch','log','try','pick','keep','follow','avoid','choose','repeat','save','message','talk','meet','review','move','break','wake','go','get'];
+
+function startsWithVerb(val){
+  if(!val) return true;
+  const first=val.trim().split(/\s+/)[0].toLowerCase().replace(/[^a-z]/g,'');
+  return ACTION_VERBS.includes(first);
+}
+
+function onModalInput(val){
+  const vh=document.getElementById('verb-hint');
+  if(!editTarget||editTarget.type!=='action'){vh.style.display='none';return}
+  if(val.trim().length<4){vh.style.display='none';return}
+  if(!startsWithVerb(val)){
+    vh.textContent='Try starting with an action word — run, read, write, call, practice\u2026';
+    vh.style.display='';
+  } else {
+    vh.style.display='none';
+  }
+}
+
+function toggleTip(e){
+  e.stopPropagation();
+  const popup=document.getElementById('tip-popup');
+  const icon=e.currentTarget;
+  if(!popup) return;
+  const isOpen=popup.classList.toggle('open');
+  icon.classList.toggle('active',isOpen);
+}
+
+/* ════════════════════════════════════════
    MODAL
    ════════════════════════════════════════ */
 function openModal(type,ti,ai){
@@ -1152,9 +1375,19 @@ function openModal(type,ti,ai){
   const inp=document.getElementById('modal-input');
   const hint=document.getElementById('modal-guide-hint');
   const examples=document.getElementById('modal-examples');
+  const transMsg=document.getElementById('modal-transition-msg');
+  const verbHint=document.getElementById('verb-hint');
+  const saveBtn=document.getElementById('modal-save-btn');
+  const cancelBtn=document.getElementById('modal-cancel-btn');
 
+  // Reset shared state
   examples.style.display='none';
-  examples.innerHTML='';
+  transMsg.style.display='none';
+  verbHint.style.display='none';
+  inp.style.display='';
+  saveBtn.textContent='Save';
+  cancelBtn.style.display='';
+  sub.textContent='';
 
   if(type==='dream'){
     bar.style.background='var(--dream-bg)';
@@ -1162,22 +1395,41 @@ function openModal(type,ti,ai){
     lbl.textContent='Your Big Dream';
     sub.textContent='The one ambitious goal everything else supports.';
     inp.value=S.dream;
+    inp.placeholder='Type here...';
   } else if(type==='theme'){
     bar.style.background=TC[ti].hex;
     bc.textContent=S.dream||'Dream';
     lbl.textContent=`Pillar ${ti+1}`;
     sub.textContent='What\u2019s one key area you need to develop to reach your dream?';
     inp.value=S.themes[ti];
+    inp.placeholder='Type here...';
     examples.style.display='';
-    examples.innerHTML='<strong>Examples</strong><br>Health &amp; Fitness, Financial Literacy, Network &amp; Mentors, Core Skills, Mindset &amp; Habits, Education, Relationships, Career Growth';
+    examples.innerHTML='\u2192 Health &amp; Fitness \u00b7 Financial Literacy \u00b7 Network &amp; Mentors \u00b7 Core Skills \u00b7 Mindset &amp; Habits \u00b7 Education \u00b7 Relationships \u00b7 Career Growth';
+  } else if(type==='transition'){
+    bar.style.background=`linear-gradient(90deg, ${TC[0].hex}, ${TC[7].hex})`;
+    bc.textContent='';
+    lbl.textContent='Now for the daily how';
+    inp.style.display='none';
+    cancelBtn.style.display='none';
+    saveBtn.textContent='Let\u2019s go \u2192';
+    transMsg.innerHTML='<p>Your pillars are the <strong>what</strong>. Now we\'re defining the <strong>daily how</strong> \u2014 small, repeatable actions you can do without thinking twice.</p><p>Each pillar gets 8 action slots. We\'ll open the first one now.</p>';
+    transMsg.style.display='';
   } else {
+    // action
     bar.style.background=TC[ti].hex;
     bc.textContent=(S.dream||'Dream')+' \u203A '+(S.themes[ti]||'Pillar '+(ti+1));
     lbl.textContent=`Action ${ai+1} of 8`;
-    sub.textContent='A specific, repeatable habit \u2014 something you can do daily or weekly.';
-    inp.value=S.actions[ti][ai];
+    const isFirstGuided=guideActive&&guideQueue.length&&guideQueue[0].type==='action'&&ti===0&&ai===0;
+    sub.innerHTML='A concrete daily behavior. <span class="tip-icon" id="tip-trigger" tabindex="0" onclick="toggleTip(event)">&#9432;</span>'
+      +'<div class="tip-popup" id="tip-popup">'
+      +'<div class="tip-row"><div class="tip-tag">Vague</div><div class="tip-bad">\u201cWork on my confidence\u201d</div></div>'
+      +'<div class="tip-row"><div class="tip-tag">Better</div><div class="tip-good">\u201cGive one unprepared answer in every meeting\u201d</div></div>'
+      +'</div>';
+    const exList=getExamples(S.themes[ti]);
+    examples.innerHTML=exList.map(e=>`\u2192 ${esc(e)}`).join('<br>');
     examples.style.display='';
-    examples.innerHTML='<strong>Examples</strong><br>Read for 30 min before bed \u00b7 Track every expense \u00b7 Reach out to one new contact per week \u00b7 Practice a skill for 1 hour \u00b7 Journal 3 wins each night';
+    inp.value=S.actions[ti][ai];
+    inp.placeholder=isFirstGuided?'e.g. \u201cDo 20 push-ups before breakfast\u201d':'Type here...';
   }
 
   if(guideActive&&guideQueue.length){
@@ -1187,26 +1439,36 @@ function openModal(type,ti,ai){
       const remaining=guideQueue.filter(q=>q.type==='theme').length;
       hint.textContent=remaining>1?`${remaining} pillars remaining. Press Enter to continue.`:'Last pillar! Press Enter to finish.';
     } else {
-      hint.textContent='';
-      hint.style.display='none';
+      hint.textContent='';hint.style.display='none';
     }
   } else {
     hint.style.display='none';
   }
 
   document.getElementById('modal-overlay').classList.add('open');
-  setTimeout(()=>inp.focus(),60);
+  if(type!=='transition') setTimeout(()=>inp.focus(),60);
 }
 
 function saveModal(){
   if(!editTarget) return;
-  const val=document.getElementById('modal-input').value.trim();
   const{type,ti,ai}=editTarget;
+  if(type==='transition'){
+    closeModal();
+    if(guideActive&&guideQueue.length) advanceGuide();
+    return;
+  }
+  const val=document.getElementById('modal-input').value.trim();
   if(type==='dream') S.dream=val;
   else if(type==='theme') S.themes[ti]=val;
   else S.actions[ti][ai]=val;
   save();
   closeModal();
+  if(type==='dream'&&val){
+    // Coach overlay gates the guide advance — dismissCoach() will call advanceGuide()
+    renderGrid();renderMobileGrid();updateProgress();renderTD();renderGantt();
+    showCoachOverlay();
+    return;
+  }
   if(guideActive&&guideQueue.length) advanceGuide();
   renderGrid();renderMobileGrid();updateProgress();renderTD();renderGantt();
 }
