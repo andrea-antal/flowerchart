@@ -1489,7 +1489,9 @@ function closeModal(){
    TIMELINE
    ════════════════════════════════════════ */
 function initTL(){
-  document.getElementById('tl-start').value=TL.start;
+  const s=document.getElementById('tl-start');
+  if(!s) return;
+  s.value=TL.start;
   document.getElementById('tl-target').value=TL.target;
   document.getElementById('tl-breakdown').value=TL.breakdown;
   renderTD();renderGantt();
