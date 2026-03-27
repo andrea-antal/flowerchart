@@ -486,8 +486,9 @@ body{
   background:var(--elevated);border-radius:16px;padding:28px 30px;
   width:440px;max-width:90vw;border:1px solid var(--border);
   box-shadow:0 32px 100px oklch(0 0 0 / 0.3);animation:modalIn .22s ease;
+  overflow:hidden;
 }
-.modal-color-bar{height:4px;border-radius:16px 16px 0 0;margin:-28px -30px 16px}
+.modal-color-bar{height:4px;margin:-28px -30px 16px}
 .modal-breadcrumb{font-size:.8rem;color:var(--faint);margin-bottom:6px;letter-spacing:.02em}
 .modal-label{
   font-family:'Instrument Serif',serif;font-size:1.2rem;
@@ -601,7 +602,8 @@ body{
 /* ════════════════════════════════════════
    ONBOARDING: ACTION MODAL ENHANCEMENTS
    ════════════════════════════════════════ */
-.modal-examples{font-size:.8rem;color:var(--faint);font-style:italic;margin:-4px 0 12px;line-height:1.75}
+.modal-examples{font-size:.8rem;color:var(--muted);margin:-4px 0 12px;line-height:1.75}
+.modal-examples strong{font-size:.72rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
 .modal-sublabel{position:relative}
 .tip-icon{
   display:inline-flex;align-items:center;justify-content:center;
@@ -623,7 +625,7 @@ body{
 .tip-tag{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--faint);margin-bottom:3px}
 .tip-bad{color:var(--muted);font-style:italic}
 .tip-good{color:var(--gold);font-weight:500;font-style:italic}
-.verb-hint{font-size:.8rem;color:var(--muted);margin-top:6px;font-style:italic;animation:fadeSlideIn .2s ease}
+.verb-hint{font-size:.8rem;color:var(--gold);margin-top:6px;font-style:italic;animation:fadeSlideIn .2s ease}
 .modal-transition-msg{display:none;margin:6px 0 18px;line-height:1.75}
 .modal-transition-msg p{
   font-family:'Instrument Serif',serif;font-size:1.1rem;
@@ -1426,7 +1428,7 @@ function openModal(type,ti,ai){
       +'<div class="tip-row"><div class="tip-tag">Better</div><div class="tip-good">\u201cGive one unprepared answer in every meeting\u201d</div></div>'
       +'</div>';
     const exList=getExamples(S.themes[ti]);
-    examples.innerHTML=exList.map(e=>`\u2192 ${esc(e)}`).join('<br>');
+    examples.innerHTML='<strong>Examples</strong><br>'+exList.map(e=>`${esc(e)}`).join(' \u00b7 ');
     examples.style.display='';
     inp.value=S.actions[ti][ai];
     inp.placeholder=isFirstGuided?'e.g. \u201cDo 20 push-ups before breakfast\u201d':'Type here...';
