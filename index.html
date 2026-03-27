@@ -507,6 +507,11 @@ body{
 .modal-actions button:hover{border-color:var(--text);color:var(--text)}
 .modal-actions button.save{background:var(--gold);color:var(--bg);border-color:var(--gold);font-weight:600}
 .modal-actions button.save:hover{background:var(--gold-dark)}
+.modal-examples{
+  font-size:.8rem;color:var(--muted);margin-top:10px;
+  line-height:1.5;
+}
+.modal-examples strong{color:var(--text);font-weight:600;font-size:.75rem;letter-spacing:.03em;text-transform:uppercase}
 .modal-guide-hint{
   font-size:.8rem;color:var(--faint);margin-top:10px;
   text-align:center;font-style:italic;
@@ -627,7 +632,6 @@ body.exporting #export-area{background:var(--bg);padding:20px}
 <!-- ═══════ MAIN APP ═══════ -->
 <div id="app" class="app-wrap">
 
-<div class="desktop-title">Flower Chart</div>
 <div class="progress-counter hidden" id="progress-counter"></div>
 
 <div style="padding:0 24px">
@@ -651,7 +655,6 @@ body.exporting #export-area{background:var(--bg);padding:20px}
 
 <!-- Mobile grid -->
 <div class="mobile-view" id="mobile-view">
-  <div class="mobile-title">Flower Chart</div>
   <div class="progress-counter hidden" id="mobile-progress-counter"></div>
   <div class="mobile-nav" id="mobile-nav" style="display:none">
     <button class="mobile-back-btn" onclick="mobileBack()">&#8592; Back</button>
@@ -685,6 +688,7 @@ body.exporting #export-area{background:var(--bg);padding:20px}
     <div class="modal-sublabel" id="modal-sublabel"></div>
     <textarea id="modal-input" placeholder="Type here..."
       onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();saveModal()}"></textarea>
+    <div class="modal-examples" id="modal-examples" style="display:none"></div>
     <div class="modal-guide-hint" id="modal-guide-hint" style="display:none"></div>
     <div class="modal-actions">
       <button onclick="cancelModal()">Cancel</button>
@@ -887,17 +891,20 @@ function hideGuideBar(){document.getElementById('guide-bar').classList.add('hidd
 function updateGuideUI(){
   const step=document.getElementById('guide-step');
   const text=document.getElementById('guide-text');
+  const ft=S.themes.filter(t=>t).length;
+  const fa=S.actions.flat().filter(a=>a).length;
 
   if(!guideActive&&!guideQueue.length){
-    const ft=S.themes.filter(t=>t).length;
-    const fa=S.actions.flat().filter(a=>a).length;
     if(ft===8&&fa>0){
-      step.textContent='Complete';
-      text.textContent='Your mandala is taking shape. Click any cell to edit, or set up your timeline below.';
+      step.textContent=`${fa}/64 actions`;
+      text.textContent='Your chart is taking shape. Click any cell to edit.';
       setTimeout(hideGuideBar,4000);
+    } else if(ft===8){
+      step.textContent='8/8 pillars';
+      text.textContent='All pillars set. Now click the outer cells to add daily actions.';
     } else if(ft>0){
-      step.textContent='Step 3 of 3';
-      text.textContent='Now click the colored petals to fill in daily actions for each pillar.';
+      step.textContent=`${ft}/8 pillars`;
+      text.textContent='Click the outer cells to add daily actions for each pillar.';
     } else {
       hideGuideBar();
     }
@@ -908,14 +915,14 @@ function updateGuideUI(){
   const next=guideQueue[0];
 
   if(next.type==='dream'){
-    step.textContent='Step 1 of 3';
-    text.textContent=guidePaused?'Click the center cell, or press Continue.':'What is your biggest dream? Start at the center.';
+    step.textContent='Dream';
+    text.textContent=guidePaused?'Click the center cell to start, or press Continue.':'Start with your dream \u2014 the one big goal at the center.';
   } else if(next.type==='theme'){
     const done=8-guideQueue.filter(q=>q.type==='theme').length;
-    step.textContent='Step 2 of 3';
+    step.textContent=`${done}/8 pillars`;
     text.textContent=guidePaused
-      ?`Pillar ${done+1} of 8 \u2014 press Continue to keep going.`
-      :`Pillar ${done+1} of 8 \u2014 name the key areas that support your dream.`;
+      ?`Pillar ${done+1} \u2014 press Continue to keep going.`
+      :`Pillar ${done+1} \u2014 what key area supports your dream?`;
   }
 }
 
@@ -1138,6 +1145,10 @@ function openModal(type,ti,ai){
   const sub=document.getElementById('modal-sublabel');
   const inp=document.getElementById('modal-input');
   const hint=document.getElementById('modal-guide-hint');
+  const examples=document.getElementById('modal-examples');
+
+  examples.style.display='none';
+  examples.innerHTML='';
 
   if(type==='dream'){
     bar.style.background='var(--dream-bg)';
@@ -1149,14 +1160,18 @@ function openModal(type,ti,ai){
     bar.style.background=TC[ti].hex;
     bc.textContent=S.dream||'Dream';
     lbl.textContent=`Pillar ${ti+1}`;
-    sub.textContent='A key area of focus that holds up your dream.';
+    sub.textContent='What\u2019s one key area you need to develop to reach your dream?';
     inp.value=S.themes[ti];
+    examples.style.display='';
+    examples.innerHTML='<strong>Examples</strong><br>Health &amp; Fitness, Financial Literacy, Network &amp; Mentors, Core Skills, Mindset &amp; Habits, Education, Relationships, Career Growth';
   } else {
     bar.style.background=TC[ti].hex;
     bc.textContent=(S.dream||'Dream')+' \u203A '+(S.themes[ti]||'Pillar '+(ti+1));
     lbl.textContent=`Action ${ai+1} of 8`;
-    sub.textContent='A concrete daily behavior.';
+    sub.textContent='A specific, repeatable habit \u2014 something you can do daily or weekly.';
     inp.value=S.actions[ti][ai];
+    examples.style.display='';
+    examples.innerHTML='<strong>Examples</strong><br>Read for 30 min before bed \u00b7 Track every expense \u00b7 Reach out to one new contact per week \u00b7 Practice a skill for 1 hour \u00b7 Journal 3 wins each night';
   }
 
   if(guideActive&&guideQueue.length){
